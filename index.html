@@ -228,8 +228,8 @@
   // reconstruct full RSO E/N; centre of the grid square at the entered precision d
   function mkFromGrid(aStr, bStr, name){
     const d = aStr.length, step = Math.pow(10, 5 - d);
-    const E = LEAD_E*100000 + parseInt(aStr,10)*step + step/2;
-    const N = LEAD_N*100000 + parseInt(bStr,10)*step + step/2;
+    const E = LEAD_E*100000 + parseInt(aStr,10)*step; // SW corner (zero-pad finer digits), matches coord-converter
+    const N = LEAD_N*100000 + parseInt(bStr,10)*step;
     const { lat, lon } = rsoToWgs(E, N);
     return { lat, lon, E, N, name, d };
   }
