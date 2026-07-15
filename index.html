@@ -163,7 +163,7 @@
 
   /* ================= systems ================= */
   const SYSTEMS = {
-    sg:  { label:"Singapore MGR", short:"Singapore MGR", kind:"grid", cols:["Easting","Northing"], hint:"EEEE NNNN name" },
+    sg:  { label:"Singapore MGR", short:"Singapore MGR", kind:"grid", cols:["Easting","Northing"], hint:"3485 5349 name · 3/4/5-digit halves" },
     bn:  { label:"Brunei MGR (coming soon)", kind:"disabled" },
     wgs_ll_dec:{ label:"WGS-84 · lat/long (decimal)", short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dec", cols:["Latitude","Longitude"],  hint:"lat lon name" },
     wgs_ll_dms:{ label:"WGS-84 · lat/long (DMS)",     short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dms", cols:["Latitude","Longitude"],  hint:"1°23'16\"N 103°42'30\"E name" },
@@ -184,11 +184,12 @@
   }
 
   /* ================= formatting ================= */
-  function pad4(n){ return String(n).padStart(4, "0"); }
-  function gridHalves(E, N){
-    const e4 = Math.floor((E - 600000) / 10), n4 = Math.floor((N - 100000) / 10);
-    if(e4 < 0 || e4 > 9999 || n4 < 0 || n4 > 9999) return ["————", "————"]; // outside SG
-    return [pad4(e4), pad4(n4)];
+  // display SG grid halves at the point's own precision d (digits per half); default 8-fig
+  function gridHalves(pt){
+    const d = pt.d || 4, step = Math.pow(10, 5 - d), max = Math.pow(10, d) - 1;
+    const e = Math.floor((pt.E - 600000) / step), n = Math.floor((pt.N - 100000) / step);
+    if(e < 0 || e > max || n < 0 || n > max) return ["————", "————"]; // outside SG
+    return [String(e).padStart(d, "0"), String(n).padStart(d, "0")];
   }
   function decWgs(v, isLat){
     const hemi = isLat ? (v>=0?"N":"S") : (v>=0?"E":"W");
@@ -203,7 +204,7 @@
   // cells for a point under a given system key
   function cellsFor(pt, key){
     const s = SYSTEMS[key];
-    if(s.kind === "grid") return gridHalves(pt.E, pt.N);
+    if(s.kind === "grid") return gridHalves(pt);
     const la = s.fmt==="dec" ? decWgs(pt.lat,true)  : dmsWgs(pt.lat,true);
     const lo = s.fmt==="dec" ? decWgs(pt.lon,false) : dmsWgs(pt.lon,false);
     return s.order==="latlon" ? [la, lo] : [lo, la];
@@ -213,16 +214,24 @@
   // Singapore 8-figure grid ref + optional trailing label
   function parseSG(line){
     const s = line.trim().replace(/\s+/g, " ");
-    let m = s.match(/^(\d{4}) (\d{4})(?: (.*))?$/);
-    if(m) return mkFromGrid(+m[1], +m[2], (m[3]||"").trim());
-    m = s.match(/^(\d{8})(?: (.*))?$/);
-    if(m) return mkFromGrid(+m[1].slice(0,4), +m[1].slice(4), (m[2]||"").trim());
-    return { error:`Expected “EEEE NNNN [name]”, e.g. 3485 5349 OP Alpha` };
+    // space-separated halves: 3+3, 4+4, or 5+5 (must match), then optional label
+    let m = s.match(/^(\d{3,5}) (\d{3,5})(?: (.*))?$/);
+    if(m){
+      if(m[1].length !== m[2].length) return { error:`Both halves need the same digit count (got ${m[1].length}+${m[2].length})` };
+      return mkFromGrid(m[1], m[2], (m[3]||"").trim());
+    }
+    // contiguous 6 / 8 / 10 digits, split in half, then optional label
+    m = s.match(/^(\d{6}|\d{8}|\d{10})(?: (.*))?$/);
+    if(m){ const d = m[1].length/2; return mkFromGrid(m[1].slice(0,d), m[1].slice(d), (m[2]||"").trim()); }
+    return { error:`Expected two equal 3-, 4-, or 5-digit halves, e.g. 3485 5349 OP Alpha` };
   }
-  function mkFromGrid(e4, n4, name){
-    const E = LEAD_E*100000 + e4*10 + 5, N = LEAD_N*100000 + n4*10 + 5;
+  // reconstruct full RSO E/N; centre of the grid square at the entered precision d
+  function mkFromGrid(aStr, bStr, name){
+    const d = aStr.length, step = Math.pow(10, 5 - d);
+    const E = LEAD_E*100000 + parseInt(aStr,10)*step + step/2;
+    const N = LEAD_N*100000 + parseInt(bStr,10)*step + step/2;
     const { lat, lon } = rsoToWgs(E, N);
-    return { lat, lon, E, N, name };
+    return { lat, lon, E, N, name, d };
   }
   // WGS-84 line: two coords (decimal or DMS) + optional trailing label
   function parseWGS(line, order){
