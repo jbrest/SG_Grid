@@ -1,6 +1,6 @@
 /* SG Grid → Maps — cache-first service worker.
    Bump CACHE when any cached file changes to force an update. */
-const CACHE = "sg-grid-v1";
+const CACHE = "sg-grid-v2";
 const ASSETS = [
   "./",
   "./index.html",

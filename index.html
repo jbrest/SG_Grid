@@ -13,128 +13,91 @@
   :root{
     --bg:#0f172a; --panel:#1e293b; --panel2:#243244; --line:#334155;
     --text:#f1f5f9; --muted:#94a3b8; --accent:#38bdf8; --accent-ink:#04283a;
-    --danger:#f87171; --ok:#34d399; --warn:#fbbf24;
-    --tap:56px;
+    --danger:#f87171; --ok:#34d399; --warn:#fbbf24; --g2:#a78bfa;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
   body{
     margin:0; background:var(--bg); color:var(--text);
-    font:500 17px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font:500 15px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     display:flex; flex-direction:column; overscroll-behavior:none;
     padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
   }
   header{
-    padding:14px 16px; border-bottom:1px solid var(--line);
-    display:flex; align-items:center; gap:10px; flex:0 0 auto;
+    padding:8px 12px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:8px; flex:0 0 auto;
   }
-  header h1{margin:0; font-size:19px; letter-spacing:.2px}
-  header .sub{color:var(--muted); font-size:13px; font-weight:500}
-  .grid-badge{
-    width:34px;height:34px;border-radius:8px;background:var(--accent);
-    display:grid;place-items:center;color:var(--accent-ink);font-weight:800;font-size:12px;flex:0 0 auto
-  }
+  header .badge{width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-weight:800;font-size:11px}
+  header h1{margin:0; font-size:15px; letter-spacing:.2px}
+  header .sub{color:var(--muted); font-size:11px; font-weight:500}
 
-  /* ---- checkpoint list ---- */
-  .list-wrap{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 12px 4px}
-  .empty{color:var(--muted); text-align:center; padding:36px 20px; font-weight:500}
-  .empty b{color:var(--text)}
-  ul#cps{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
-  .cp-grid{display:grid; grid-template-columns:30px 60px 1fr 1fr 48px; align-items:center; gap:8px}
-  .list-head{
+  /* ---- panels ---- */
+  .panel{flex:1 1 0; min-height:0; display:flex; flex-direction:column; border-bottom:1px solid var(--line)}
+  .panel-head{
+    display:flex; align-items:center; gap:8px; padding:6px 10px; flex:0 0 auto;
+  }
+  .tag{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .tag.a{background:var(--accent)} .tag.b{background:var(--g2)}
+  select.sys{
+    flex:1 1 auto; min-width:0; appearance:none; -webkit-appearance:none;
+    background:var(--panel2); color:var(--text); border:1px solid var(--line);
+    border-radius:9px; padding:8px 30px 8px 10px; font-size:14px; font-weight:700;
+    background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%; background-size:5px 5px,5px 5px; background-repeat:no-repeat;
+  }
+  button.copy{
+    flex:0 0 auto; border:1px solid var(--line); background:var(--panel2); color:var(--accent);
+    font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+    padding:8px 12px; border-radius:9px; cursor:pointer;
+  }
+  button.copy:active{background:var(--line)}
+  button.copy:disabled{opacity:.4}
+  .panel-body{flex:1 1 auto; overflow:auto; -webkit-overflow-scrolling:touch; padding:0 10px 8px}
+  .colhead,.row{
+    display:grid; grid-template-columns:22px minmax(84px,1fr) minmax(84px,1fr) minmax(64px,1.1fr);
+    gap:6px; align-items:center;
+  }
+  .colhead{
     position:sticky; top:0; z-index:2; background:var(--bg);
-    padding:2px 11px 8px; margin:0; color:var(--muted);
-    font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.6px;
+    padding:2px 2px 6px; color:var(--muted); font-size:10px; font-weight:800;
+    text-transform:uppercase; letter-spacing:.5px;
   }
-  .list-head span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  li.cp{
-    background:var(--panel); border:1px solid var(--line); border-radius:12px;
-    padding:10px; touch-action:pan-y; user-select:none;
+  .colhead span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .rows{display:flex; flex-direction:column; gap:5px}
+  .row{
+    background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:7px 8px;
   }
-  li.cp.dragging{opacity:.85; border-color:var(--accent); box-shadow:0 8px 24px rgba(0,0,0,.5); position:relative; z-index:5}
-  li.cp.drop-above{box-shadow:inset 0 3px 0 var(--accent)}
-  li.cp.drop-below{box-shadow:inset 0 -3px 0 var(--accent)}
-  .handle{
-    width:30px; height:44px; display:grid; place-items:center;
-    color:var(--muted); cursor:grab; touch-action:none; font-size:20px;
-  }
-  .cp-name{font-weight:800; font-size:15px; color:var(--accent)}
-  .cp-col{font-variant-numeric:tabular-nums; letter-spacing:1px; font-size:18px}
-  .del{
-    width:48px; height:48px; border:none; background:transparent;
-    color:var(--danger); font-size:22px; border-radius:10px; cursor:pointer; justify-self:end;
-  }
-  .del:active{background:rgba(248,113,113,.15)}
+  .row .n{color:var(--muted); font-size:12px; font-weight:700; font-variant-numeric:tabular-nums}
+  .row .c{font-variant-numeric:tabular-nums; letter-spacing:.5px; font-size:15px; white-space:nowrap}
+  .row .nm{color:var(--muted); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .empty{color:var(--muted); font-size:13px; padding:14px 4px; text-align:center}
+  .disabled-note{color:var(--warn); font-size:12px; padding:14px 4px; text-align:center}
 
   /* ---- input dock ---- */
-  .dock{flex:0 0 auto; border-top:1px solid var(--line); background:var(--panel); padding:10px 12px 12px}
+  .dock{flex:0 0 auto; background:var(--panel); padding:8px 10px 10px; border-top:2px solid var(--line)}
+  .dock-label{color:var(--muted); font-size:12px; margin:0 2px 6px}
+  .dock-label b{color:var(--accent)}
+  .dock-label code{background:var(--panel2); padding:1px 5px; border-radius:4px; color:var(--text); font-size:11px}
   textarea#input{
-    width:100%; max-height:22vh; min-height:52px; resize:none; border-radius:12px;
+    width:100%; max-height:22vh; min-height:64px; resize:none; border-radius:10px;
     border:1px solid var(--line); background:var(--panel2); color:var(--text);
-    padding:12px 14px; font:600 18px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
-    letter-spacing:1px; overflow-y:auto;
+    padding:10px 12px; font:600 16px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.5px; overflow-y:auto;
   }
-  textarea#input::placeholder{color:var(--muted); font-weight:500; letter-spacing:normal; font-family:inherit}
-  #errors{margin:8px 2px 0; display:flex; flex-direction:column; gap:4px}
-  .err{color:var(--danger); font-size:13px; font-weight:600}
-  .btnrow{display:flex; gap:10px; margin-top:10px}
-  button.btn{
-    flex:1 1 0; min-height:var(--tap); border-radius:12px; border:1px solid var(--line);
-    background:var(--panel2); color:var(--text); font-size:16px; font-weight:700; cursor:pointer;
-    padding:0 12px;
+  textarea#input::placeholder{color:var(--muted); font-weight:500; letter-spacing:normal}
+  #errors{margin:6px 2px 0; display:flex; flex-direction:column; gap:3px}
+  .err{color:var(--danger); font-size:12px; font-weight:600}
+  .dock-actions{display:flex; gap:8px; margin-top:8px}
+  a.btn,button.btn{
+    flex:1 1 0; min-height:48px; display:flex; align-items:center; justify-content:center; gap:8px;
+    border-radius:11px; border:1px solid var(--line); background:var(--panel2); color:var(--text);
+    font-size:15px; font-weight:800; cursor:pointer; text-decoration:none; padding:0 12px;
   }
-  button.btn:active{transform:translateY(1px)}
-  button.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
-  button.btn:disabled{opacity:.4; pointer-events:none}
-  .actions{display:flex; gap:10px; margin-top:10px}
-
-  /* ---- maps export panel ---- */
-  #maps{margin-top:10px; display:none}
-  #maps.show{display:block}
-  .maps-card{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px}
-  a.maplink{
-    display:flex; align-items:center; justify-content:center; gap:8px; min-height:var(--tap);
-    background:var(--ok); color:#04321f; font-weight:800; border-radius:10px; text-decoration:none; font-size:16px;
-  }
-  .warn{color:var(--warn); font-size:13px; font-weight:600; margin-top:8px}
-  .pins-title{color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin:12px 2px 6px}
-  .pins{display:flex; flex-direction:column; gap:2px}
-  a.pin{
-    display:flex; gap:8px; align-items:baseline; padding:9px 8px; border-radius:8px;
-    color:var(--accent); text-decoration:none; font-size:14px; border:1px solid transparent;
-  }
-  a.pin:active{background:rgba(56,189,248,.12)}
-  a.pin b{color:var(--text); flex:0 0 auto}
-  a.pin span{color:var(--muted); font-variant-numeric:tabular-nums}
-
-  /* ---- coordinate page ---- */
-  #coordpage{
-    position:fixed; inset:0; background:var(--bg); z-index:50; transform:translateX(100%);
-    transition:transform .22s ease; display:flex; flex-direction:column;
-    padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
-  }
-  #coordpage.open{transform:translateX(0)}
-  .cp-head{padding:12px 12px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px}
-  .back{width:var(--tap); height:var(--tap); border:none; background:transparent; color:var(--text); font-size:26px; border-radius:10px; cursor:pointer}
-  .back:active{background:var(--panel)}
-  .cp-head h2{margin:0; font-size:17px}
-  .toggles{padding:12px; display:flex; flex-direction:column; gap:10px}
-  .seg{display:flex; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:4px; gap:4px}
-  .seg button{
-    flex:1 1 0; min-height:44px; border:none; border-radius:9px; background:transparent; color:var(--muted);
-    font-weight:700; font-size:15px; cursor:pointer;
-  }
-  .seg button.on{background:var(--accent); color:var(--accent-ink)}
-  .coordbox-wrap{flex:1 1 auto; padding:0 12px 12px; display:flex; flex-direction:column; min-height:0}
-  textarea#coordout{
-    flex:1 1 auto; width:100%; resize:none; border-radius:12px; border:1px solid var(--line);
-    background:var(--panel2); color:var(--text); padding:14px;
-    font:600 16px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.5px; overflow:auto;
-  }
-  #copybtn{margin-top:10px}
+  a.btn.primary{background:var(--ok); color:#04321f; border-color:var(--ok)}
+  a.btn.disabled{opacity:.4; pointer-events:none}
+  button.btn.ghost{flex:0 0 auto; color:var(--danger)}
   .toast{
-    position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px);
-    background:var(--ok); color:#04321f; font-weight:800; padding:12px 20px; border-radius:999px; opacity:0;
+    position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px);
+    background:var(--ok); color:#04321f; font-weight:800; padding:10px 18px; border-radius:999px; opacity:0;
     transition:all .2s ease; pointer-events:none; z-index:100;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
@@ -142,60 +105,47 @@
 </head>
 <body>
   <header>
-    <div class="grid-badge">SG</div>
-    <div>
-      <h1>Grid → Maps</h1>
-      <div class="sub">8-fig RSO → lat/long &amp; Google Maps</div>
-    </div>
+    <div class="badge">SG</div>
+    <div><h1>Grid ⇄ Maps</h1><div class="sub">RSO / WGS-84 coordinate converter</div></div>
   </header>
 
-  <div class="list-wrap">
-    <div class="empty" id="empty">
-      <b>No checkpoints yet.</b><br>
-      Paste one or more 8-figure references below,<br>e.g. <b>3485&nbsp;5349</b>, then tap <b>Add</b>.
+  <!-- GRID 1 -->
+  <section class="panel">
+    <div class="panel-head">
+      <span class="tag a"></span>
+      <select class="sys" id="sys1"></select>
+      <button class="copy" id="copy1" disabled>Copy</button>
     </div>
-    <div class="list-head cp-grid" id="listhead" style="display:none">
-      <span></span><span>Name</span><span>Easting</span><span>Northing</span><span></span>
-    </div>
-    <ul id="cps"></ul>
-  </div>
-
-  <div class="dock">
-    <textarea id="input" rows="1" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false"
-      placeholder="Paste grid references — one per line&#10;3485 5349"></textarea>
-    <div id="errors"></div>
-    <div class="btnrow">
-      <button class="btn primary" id="addbtn">Add to list</button>
-      <button class="btn" id="clearbtn">Clear all</button>
-    </div>
-    <div class="actions">
-      <button class="btn" id="mapsbtn" disabled>Export to Google Maps</button>
-      <button class="btn" id="coordbtn" disabled>Export coordinates</button>
-    </div>
-    <div id="maps"></div>
-  </div>
-
-  <!-- coordinate page -->
-  <section id="coordpage" aria-hidden="true">
-    <div class="cp-head">
-      <button class="back" id="backbtn" aria-label="Back">‹</button>
-      <h2>Coordinates</h2>
-    </div>
-    <div class="toggles">
-      <div class="seg" id="orderseg">
-        <button data-order="latlon" class="on">lat, long</button>
-        <button data-order="lonlat">long, lat</button>
-      </div>
-      <div class="seg" id="fmtseg">
-        <button data-fmt="dec" class="on">Decimal</button>
-        <button data-fmt="dms">DMS</button>
-      </div>
-    </div>
-    <div class="coordbox-wrap">
-      <textarea id="coordout" readonly></textarea>
-      <button class="btn primary" id="copybtn">Copy</button>
+    <div class="panel-body">
+      <div class="colhead" id="head1"></div>
+      <div class="rows" id="rows1"></div>
     </div>
   </section>
+
+  <!-- GRID 2 -->
+  <section class="panel">
+    <div class="panel-head">
+      <span class="tag b"></span>
+      <select class="sys" id="sys2"></select>
+      <button class="copy" id="copy2" disabled>Copy</button>
+    </div>
+    <div class="panel-body">
+      <div class="colhead" id="head2"></div>
+      <div class="rows" id="rows2"></div>
+    </div>
+  </section>
+
+  <!-- INPUT -->
+  <div class="dock">
+    <div class="dock-label">Input · <b id="inlabel">Singapore MGR</b> — one point per line: <code id="inhint">EEEE NNNN name</code></div>
+    <textarea id="input" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+      placeholder="3485 5349 OP Alpha&#10;3514 5189 OP Bravo"></textarea>
+    <div id="errors"></div>
+    <div class="dock-actions">
+      <a class="btn primary disabled" id="mapsbtn" target="_blank" rel="noopener">📍 Open in Google Maps</a>
+      <button class="btn ghost" id="clearbtn" title="Clear input">Clear</button>
+    </div>
+  </div>
 
   <div class="toast" id="toast">Copied</div>
 
@@ -203,269 +153,207 @@
   <script>
   "use strict";
 
-  /* ---------------- conversion core (validated) ---------------- */
+  /* ================= conversion core (validated EPSG:3168 RSO) ================= */
   proj4.defs("EPSG:3168",
     "+proj=omerc +no_uoff +lat_0=4 +lonc=102.25 +alpha=323.0257905 +gamma=323.130102361111 " +
     "+k=0.99984 +x_0=804670.24 +y_0=0 +ellps=evrst69 +towgs84=-11,851,5,0,0,0,0 +units=m +no_defs");
-
   const LEAD_E = 6, LEAD_N = 1;
+  function rsoToWgs(E, N){ const [lon, lat] = proj4("EPSG:3168", "WGS84", [E, N]); return { lat, lon }; }
+  function wgsToRso(lat, lon){ const [E, N] = proj4("WGS84", "EPSG:3168", [lon, lat]); return { E, N }; }
 
-  // 8-figure only: two 4-digit halves. Tolerant of whitespace and 8 contiguous digits.
-  function parseGridRef(line){
-    const raw = line.replace(/\s+/g, " ").trim();
-    if(!raw) return null; // blank line -> skip silently
-    let a, b;
-    const m = raw.match(/^(\d+)\s+(\d+)$/);
-    if(m){ a = m[1]; b = m[2]; }
-    else if(/^\d{8}$/.test(raw)){ a = raw.slice(0,4); b = raw.slice(4); }
-    else return { raw, error:`“${line.trim()}” — expected two numbers, e.g. 3485 5349` };
-    if(a.length !== 4 || b.length !== 4)
-      return { raw, error:`“${line.trim()}” — 8-figure only: each half must be 4 digits (got ${a.length}+${b.length})` };
-    return { raw:`${a} ${b}`, e4:parseInt(a,10), n4:parseInt(b,10) };
+  /* ================= systems ================= */
+  const SYSTEMS = {
+    sg:  { label:"Singapore MGR", short:"Singapore MGR", kind:"grid", cols:["Easting","Northing"], hint:"EEEE NNNN name" },
+    bn:  { label:"Brunei MGR (coming soon)", kind:"disabled" },
+    wgs_ll_dec:{ label:"WGS-84 · lat/long (decimal)", short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dec", cols:["Latitude","Longitude"],  hint:"lat lon name" },
+    wgs_ll_dms:{ label:"WGS-84 · lat/long (DMS)",     short:"WGS-84 lat/long", kind:"wgs", order:"latlon", fmt:"dms", cols:["Latitude","Longitude"],  hint:"1°23'16\"N 103°42'30\"E name" },
+    wgs_lp_dec:{ label:"WGS-84 · long/lat (decimal)", short:"WGS-84 long/lat", kind:"wgs", order:"lonlat", fmt:"dec", cols:["Longitude","Latitude"],  hint:"lon lat name" },
+    wgs_lp_dms:{ label:"WGS-84 · long/lat (DMS)",     short:"WGS-84 long/lat", kind:"wgs", order:"lonlat", fmt:"dms", cols:["Longitude","Latitude"],  hint:"103°42'30\"E 1°23'16\"N name" },
+  };
+  function buildSelect(sel, def){
+    sel.innerHTML =
+      `<option value="sg">Singapore MGR</option>` +
+      `<option value="bn" disabled>Brunei MGR (coming soon)</option>` +
+      `<optgroup label="WGS-84">` +
+        `<option value="wgs_ll_dec">lat/long · decimal</option>` +
+        `<option value="wgs_ll_dms">lat/long · DMS</option>` +
+        `<option value="wgs_lp_dec">long/lat · decimal</option>` +
+        `<option value="wgs_lp_dms">long/lat · DMS</option>` +
+      `</optgroup>`;
+    sel.value = def;
   }
 
-  // grid ref -> full RSO easting/northing, centre of the 10 m square
-  function toRSO(e4, n4){
-    return { E: LEAD_E*100000 + e4*10 + 5, N: LEAD_N*100000 + n4*10 + 5 };
+  /* ================= formatting ================= */
+  function pad4(n){ return String(n).padStart(4, "0"); }
+  function gridHalves(E, N){
+    const e4 = Math.floor((E - 600000) / 10), n4 = Math.floor((N - 100000) / 10);
+    if(e4 < 0 || e4 > 9999 || n4 < 0 || n4 > 9999) return ["————", "————"]; // outside SG
+    return [pad4(e4), pad4(n4)];
   }
-
-  function toWGS84(E, N){
-    const [lon, lat] = proj4("EPSG:3168", "WGS84", [E, N]);
-    return { lat, lon };
-  }
-
-  // invariant assertion (spec)
-  function assertRSO(E, N){
-    return E >= 600000 && E <= 699999 && N >= 100000 && N <= 199999;
-  }
-
-  /* ---------------- formatting ---------------- */
-  function decStr(v){ return v.toFixed(5); }            // display / copy precision
-  function urlNum(v){ return v.toFixed(6); }            // maps URL precision
-
-  function dmsStr(v, isLat){
+  function decWgs(v, isLat){
     const hemi = isLat ? (v>=0?"N":"S") : (v>=0?"E":"W");
-    let x = Math.abs(v);
-    let d = Math.floor(x);
-    let mFull = (x - d) * 60;
-    let m = Math.floor(mFull);
-    let s = (mFull - m) * 60;
-    // round seconds to 3dp, carry if it hits 60
-    let sr = Math.round(s*1000)/1000;
-    if(sr >= 60){ sr -= 60; m += 1; }
-    if(m >= 60){ m -= 60; d += 1; }
-    const ss = sr.toFixed(3).padStart(6,"0"); // e.g. 06.772
-    return `${d}°${String(m).padStart(2,"0")}'${ss}"${hemi}`;
+    return `${Math.abs(v).toFixed(5)}° ${hemi}`;
+  }
+  function dmsWgs(v, isLat){
+    const hemi = isLat ? (v>=0?"N":"S") : (v>=0?"E":"W");
+    let x=Math.abs(v), d=Math.floor(x), mF=(x-d)*60, m=Math.floor(mF), s=(mF-m)*60;
+    let sr=Math.round(s*1000)/1000; if(sr>=60){sr-=60;m++;} if(m>=60){m-=60;d++;}
+    return `${d}°${String(m).padStart(2,"0")}'${sr.toFixed(3).padStart(6,"0")}"${hemi}`;
+  }
+  // cells for a point under a given system key
+  function cellsFor(pt, key){
+    const s = SYSTEMS[key];
+    if(s.kind === "grid") return gridHalves(pt.E, pt.N);
+    const la = s.fmt==="dec" ? decWgs(pt.lat,true)  : dmsWgs(pt.lat,true);
+    const lo = s.fmt==="dec" ? decWgs(pt.lon,false) : dmsWgs(pt.lon,false);
+    return s.order==="latlon" ? [la, lo] : [lo, la];
   }
 
-  /* ---------------- maps URLs ---------------- */
-  function pinUrl(lat, lon){
-    return `https://www.google.com/maps/search/?api=1&query=${urlNum(lat)},${urlNum(lon)}`;
+  /* ================= parsing ================= */
+  // Singapore 8-figure grid ref + optional trailing label
+  function parseSG(line){
+    const s = line.trim().replace(/\s+/g, " ");
+    let m = s.match(/^(\d{4}) (\d{4})(?: (.*))?$/);
+    if(m) return mkFromGrid(+m[1], +m[2], (m[3]||"").trim());
+    m = s.match(/^(\d{8})(?: (.*))?$/);
+    if(m) return mkFromGrid(+m[1].slice(0,4), +m[1].slice(4), (m[2]||"").trim());
+    return { error:`Expected “EEEE NNNN [name]”, e.g. 3485 5349 OP Alpha` };
   }
-  const WAYPOINT_CAP = 9;
-  function routeUrl(points){
-    if(points.length === 1) return pinUrl(points[0].lat, points[0].lon);
-    const ll = p => `${urlNum(p.lat)},${urlNum(p.lon)}`;
-    const origin = ll(points[0]);
-    const dest = ll(points[points.length-1]);
-    const mids = points.slice(1, -1).map(ll);
-    let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=walking`;
-    if(mids.length) url += `&waypoints=${mids.join("%7C")}`;
-    return url;
+  function mkFromGrid(e4, n4, name){
+    const E = LEAD_E*100000 + e4*10 + 5, N = LEAD_N*100000 + n4*10 + 5;
+    const { lat, lon } = rsoToWgs(E, N);
+    return { lat, lon, E, N, name };
+  }
+  // WGS-84 line: two coords (decimal or DMS) + optional trailing label
+  function parseWGS(line, order){
+    const s = line.trim();
+    let found = [], endIdx = 0;
+    if(/°|['′]/.test(s)){
+      const re = /(-?\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['′])?\s*(?:(\d+(?:\.\d+)?)\s*["″])?\s*([NSEWnsew])?/g;
+      let mm; while(found.length < 2 && (mm = re.exec(s))){
+        if(!mm[0].trim()){ re.lastIndex++; continue; }
+        const val = (+mm[1]) + (+(mm[2]||0))/60 + (+(mm[3]||0))/3600;
+        found.push({ val, hemi:(mm[4]||"").toUpperCase() }); endIdx = re.lastIndex;
+      }
+    } else {
+      const re = /([+-]?\d+(?:\.\d+)?)\s*([NSEWnsew])?/g;
+      let mm; while(found.length < 2 && (mm = re.exec(s))){
+        if(!mm[1]){ re.lastIndex++; continue; }
+        found.push({ val:parseFloat(mm[1]), hemi:(mm[2]||"").toUpperCase() }); endIdx = re.lastIndex;
+      }
+    }
+    if(found.length < 2) return { error:`Expected two coordinates, e.g. 1.388 103.708 OP Alpha` };
+    const name = s.slice(endIdx).replace(/^[\s,]+/, "").trim();
+    let lat, lon;
+    if(found[0].hemi || found[1].hemi){
+      for(const t of found){
+        if(t.hemi==="N") lat = Math.abs(t.val);
+        else if(t.hemi==="S") lat = -Math.abs(t.val);
+        else if(t.hemi==="E") lon = Math.abs(t.val);
+        else if(t.hemi==="W") lon = -Math.abs(t.val);
+      }
+      const bare = found.find(t => !t.hemi);
+      if(bare){ if(lat===undefined) lat = bare.val; else if(lon===undefined) lon = bare.val; }
+    } else if(order === "latlon"){ lat = found[0].val; lon = found[1].val; }
+    else { lon = found[0].val; lat = found[1].val; }
+    if(lat===undefined || lon===undefined) return { error:`Couldn’t read lat & lon from “${line.trim()}”` };
+    const { E, N } = wgsToRso(lat, lon);
+    return { lat, lon, E, N, name };
   }
 
-  /* ---------------- state ---------------- */
-  let cps = []; // { raw, e4, n4, E, N, lat, lon }
+  /* ================= maps URLs ================= */
+  function pinUrl(lat, lon){ return `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lon.toFixed(6)}`; }
+  function routeUrl(pts){
+    if(pts.length === 1) return pinUrl(pts[0].lat, pts[0].lon);
+    const ll = p => `${p.lat.toFixed(6)},${p.lon.toFixed(6)}`;
+    const mids = pts.slice(1, -1).map(ll);
+    let u = `https://www.google.com/maps/dir/?api=1&origin=${ll(pts[0])}&destination=${ll(pts[pts.length-1])}&travelmode=walking`;
+    if(mids.length) u += `&waypoints=${mids.join("%7C")}`;
+    return u;
+  }
 
+  /* ================= state + render ================= */
+  let points = []; // canonical [{lat,lon,E,N,name}]
   const $ = s => document.querySelector(s);
-  const listEl = $("#cps"), emptyEl = $("#empty"), errEl = $("#errors");
-  const mapsBtn = $("#mapsbtn"), coordBtn = $("#coordbtn"), mapsPanel = $("#maps");
+  const sys1 = $("#sys1"), sys2 = $("#sys2");
+  buildSelect(sys1, "sg"); buildSelect(sys2, "wgs_ll_dec");
 
-  function addFromInput(){
-    const text = $("#input").value;
-    const lines = text.split(/\r?\n/);
+  function parseInput(){
+    const sys = SYSTEMS[sys1.value];
+    const lines = $("#input").value.split(/\r?\n/);
     const errs = [];
-    let added = 0;
-    for(const line of lines){
-      const p = parseGridRef(line);
-      if(p === null) continue;
-      if(p.error){ errs.push(p.error); continue; }
-      const { E, N } = toRSO(p.e4, p.n4);
-      if(!assertRSO(E, N)){ errs.push(`“${p.raw}” — outside Singapore grid bounds`); continue; }
-      const { lat, lon } = toWGS84(E, N);
-      cps.push({ raw:p.raw, e4:p.e4, n4:p.n4, E, N, lat, lon });
-      added++;
-    }
+    points = [];
+    lines.forEach((line, i) => {
+      if(!line.trim()) return;
+      const p = sys.kind === "grid" ? parseSG(line) : parseWGS(line, sys.order);
+      if(p.error) errs.push(`Line ${i+1}: ${p.error}`);
+      else points.push(p);
+    });
     renderErrors(errs);
-    if(added){ $("#input").value = ""; autoGrow(); render(); }
-    else if(!errs.length && text.trim()===""){ /* nothing */ }
+    renderAll();
   }
-
   function renderErrors(errs){
-    errEl.innerHTML = "";
-    for(const e of errs){
-      const d = document.createElement("div");
-      d.className = "err"; d.textContent = "⚠ " + e;
-      errEl.appendChild(d);
-    }
+    const el = $("#errors"); el.innerHTML = "";
+    errs.forEach(e => { const d=document.createElement("div"); d.className="err"; d.textContent="⚠ "+e; el.appendChild(d); });
   }
 
-  function render(){
-    listEl.innerHTML = "";
-    emptyEl.style.display = cps.length ? "none" : "block";
-    document.getElementById("listhead").style.display = cps.length ? "grid" : "none";
-    cps.forEach((c, i) => listEl.appendChild(renderRow(c, i)));
-    const has = cps.length > 0;
-    mapsBtn.disabled = !has;
-    coordBtn.disabled = !has;
-    if(mapsPanel.classList.contains("show")) renderMaps(); // keep live
+  function renderGrid(headEl, rowsEl, key){
+    const s = SYSTEMS[key];
+    if(s.kind === "disabled"){ headEl.innerHTML=""; rowsEl.innerHTML = `<div class="disabled-note">Brunei MGR — coming soon</div>`; return; }
+    headEl.innerHTML = `<span>#</span><span>${s.cols[0]}</span><span>${s.cols[1]}</span><span>Name</span>`;
+    if(!points.length){ rowsEl.innerHTML = `<div class="empty">Enter coordinates below to convert.</div>`; return; }
+    rowsEl.innerHTML = points.map((pt, i) => {
+      const [a, b] = cellsFor(pt, key);
+      return `<div class="row"><span class="n">${i+1}</span><span class="c">${a}</span><span class="c">${b}</span><span class="nm">${escapeHtml(pt.name)}</span></div>`;
+    }).join("");
+  }
+  function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  function renderAll(){
+    renderGrid($("#head1"), $("#rows1"), sys1.value);
+    renderGrid($("#head2"), $("#rows2"), sys2.value);
+    const has = points.length > 0;
+    $("#copy1").disabled = !has || SYSTEMS[sys1.value].kind==="disabled";
+    $("#copy2").disabled = !has || SYSTEMS[sys2.value].kind==="disabled";
+    const maps = $("#mapsbtn");
+    if(has){ maps.href = routeUrl(points); maps.classList.remove("disabled"); }
+    else { maps.removeAttribute("href"); maps.classList.add("disabled"); }
+    // input hint follows Grid 1
+    $("#inlabel").textContent = SYSTEMS[sys1.value].short || SYSTEMS[sys1.value].label;
+    $("#inhint").textContent = SYSTEMS[sys1.value].hint || "coord coord name";
   }
 
-  function renderRow(c, i){
-    const li = document.createElement("li");
-    li.className = "cp cp-grid"; li.dataset.idx = i;
-    li.innerHTML = `
-      <div class="handle" title="Drag to reorder">⠿</div>
-      <div class="cp-name">CP ${i+1}</div>
-      <div class="cp-col">${String(c.e4).padStart(4,"0")}</div>
-      <div class="cp-col">${String(c.n4).padStart(4,"0")}</div>
-      <button class="del" aria-label="Delete CP ${i+1}">✕</button>`;
-    li.querySelector(".del").addEventListener("click", () => { cps.splice(i,1); render(); });
-    attachDrag(li);
-    return li;
+  /* ================= copy ================= */
+  function copyGrid(key){
+    if(SYSTEMS[key].kind==="disabled" || !points.length) return;
+    const text = points.map(pt => {
+      const [a, b] = cellsFor(pt, key);
+      return pt.name ? `${a} ${b}  ${pt.name}` : `${a} ${b}`;
+    }).join("\n");
+    writeClip(text, `Copied ${points.length} point${points.length>1?"s":""}`);
   }
-
-  /* ---------------- maps export (inline) ---------------- */
-  function renderMaps(){
-    mapsPanel.classList.add("show");
-    const link = routeUrl(cps);
-    const single = cps.length === 1;
-    let html = `<div class="maps-card">
-      <a class="maplink" href="${link}" target="_blank" rel="noopener">📍 ${single?"Open pin in Google Maps":"Open route in Google Maps"}</a>`;
-    const mids = Math.max(0, cps.length - 2);
-    if(mids > WAYPOINT_CAP){
-      html += `<div class="warn">⚠ ${cps.length} stops — Google may drop stops past ~${WAYPOINT_CAP}. Use the individual pins below for those.</div>`;
-    }
-    if(!single){
-      html += `<div class="pins-title">Individual pins (fallback)</div><div class="pins">`;
-      cps.forEach((c,i) => {
-        html += `<a class="pin" href="${pinUrl(c.lat,c.lon)}" target="_blank" rel="noopener"><b>CP ${i+1}</b> <span>${c.raw} · ${decStr(c.lat)}, ${decStr(c.lon)}</span></a>`;
-      });
-      html += `</div>`;
-    }
-    html += `</div>`;
-    mapsPanel.innerHTML = html;
-  }
-
-  mapsBtn.addEventListener("click", () => {
-    if(mapsPanel.classList.contains("show")){ mapsPanel.classList.remove("show"); mapsPanel.innerHTML=""; }
-    else renderMaps();
-  });
-
-  /* ---------------- coordinate page ---------------- */
-  let order = "latlon", fmt = "dec";
-  const coordPage = $("#coordpage"), coordOut = $("#coordout");
-
-  function coordLine(c){
-    let A, B;
-    if(fmt === "dec"){ A = decStr(c.lat); B = decStr(c.lon); }
-    else { A = dmsStr(c.lat, true); B = dmsStr(c.lon, false); }
-    return order === "latlon" ? `${A}, ${B}` : `${B}, ${A}`;
-  }
-  function renderCoords(){
-    coordOut.value = cps.map(coordLine).join("\n");
-  }
-  function openCoords(){ renderCoords(); coordPage.classList.add("open"); coordPage.setAttribute("aria-hidden","false"); }
-  function closeCoords(){ coordPage.classList.remove("open"); coordPage.setAttribute("aria-hidden","true"); }
-
-  coordBtn.addEventListener("click", openCoords);
-  $("#backbtn").addEventListener("click", closeCoords);
-
-  $("#orderseg").addEventListener("click", e => {
-    const b = e.target.closest("button"); if(!b) return;
-    order = b.dataset.order;
-    [...e.currentTarget.children].forEach(x => x.classList.toggle("on", x===b));
-    renderCoords();
-  });
-  $("#fmtseg").addEventListener("click", e => {
-    const b = e.target.closest("button"); if(!b) return;
-    fmt = b.dataset.fmt;
-    [...e.currentTarget.children].forEach(x => x.classList.toggle("on", x===b));
-    renderCoords();
-  });
-
-  $("#copybtn").addEventListener("click", async () => {
-    const text = coordOut.value;
+  async function writeClip(text, msg){
     try{ await navigator.clipboard.writeText(text); }
-    catch(_){ coordOut.select(); document.execCommand("copy"); }
-    showToast("Copied");
+    catch(_){ const t=document.createElement("textarea"); t.value=text; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+    showToast(msg);
+  }
+  function showToast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(showToast._t); showToast._t=setTimeout(()=>t.classList.remove("show"),1400); }
+
+  /* ================= wiring ================= */
+  let deb;
+  $("#input").addEventListener("input", e => {
+    e.target.style.height="auto"; e.target.style.height=Math.min(e.target.scrollHeight, window.innerHeight*0.22)+"px";
+    clearTimeout(deb); deb = setTimeout(parseInput, 120);
   });
+  sys1.addEventListener("change", parseInput); // re-interpret input in new Grid 1 system
+  sys2.addEventListener("change", renderAll);
+  $("#copy1").addEventListener("click", () => copyGrid(sys1.value));
+  $("#copy2").addEventListener("click", () => copyGrid(sys2.value));
+  $("#clearbtn").addEventListener("click", () => { $("#input").value=""; $("#input").style.height="auto"; parseInput(); });
 
-  function showToast(msg){
-    const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-    clearTimeout(showToast._t); showToast._t = setTimeout(()=>t.classList.remove("show"), 1400);
-  }
+  if("serviceWorker" in navigator){ window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{})); }
 
-  /* ---------------- input wiring ---------------- */
-  const inputEl = $("#input");
-  function autoGrow(){ inputEl.style.height = "auto"; inputEl.style.height = Math.min(inputEl.scrollHeight, window.innerHeight*0.22) + "px"; }
-  inputEl.addEventListener("input", autoGrow);
-  $("#addbtn").addEventListener("click", addFromInput);
-  $("#clearbtn").addEventListener("click", () => {
-    cps = []; renderErrors([]); mapsPanel.classList.remove("show"); mapsPanel.innerHTML=""; render();
-  });
-
-  /* ---------------- drag to reorder (pointer-based, touch friendly) ---------------- */
-  let drag = null;
-  function attachDrag(li){
-    const handle = li.querySelector(".handle");
-    handle.addEventListener("pointerdown", e => {
-      e.preventDefault();
-      const from = +li.dataset.idx;
-      drag = { li, from, y:e.clientY };
-      li.classList.add("dragging");
-      handle.setPointerCapture(e.pointerId);
-    });
-    handle.addEventListener("pointermove", e => {
-      if(!drag) return;
-      const rows = [...listEl.children];
-      let target = null, place = null;
-      for(const r of rows){
-        if(r === drag.li) continue;
-        const b = r.getBoundingClientRect();
-        r.classList.remove("drop-above","drop-below");
-        if(e.clientY >= b.top && e.clientY <= b.bottom){
-          target = r; place = (e.clientY < b.top + b.height/2) ? "above" : "below";
-        }
-      }
-      rows.forEach(r => { if(r!==target) r.classList.remove("drop-above","drop-below"); });
-      if(target){ target.classList.add(place==="above"?"drop-above":"drop-below"); drag.target = +target.dataset.idx; drag.place = place; }
-      else { drag.target = null; }
-    });
-    const end = e => {
-      if(!drag) return;
-      drag.li.classList.remove("dragging");
-      [...listEl.children].forEach(r => r.classList.remove("drop-above","drop-below"));
-      if(drag.target != null){
-        let to = drag.target + (drag.place === "below" ? 1 : 0);
-        const item = cps.splice(drag.from, 1)[0];
-        if(drag.from < to) to--;
-        cps.splice(to, 0, item);
-        render();
-      }
-      drag = null;
-    };
-    handle.addEventListener("pointerup", end);
-    handle.addEventListener("pointercancel", end);
-  }
-
-  /* ---------------- service worker ---------------- */
-  if("serviceWorker" in navigator){
-    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
-  }
-
-  render();
-  autoGrow();
+  renderAll();
   </script>
 </body>
 </html>
